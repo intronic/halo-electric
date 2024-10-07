@@ -1,8 +1,8 @@
 (ns dev
   (:require
-   electric-starter-app.main
+   halo-electric.main
    [hyperfiddle.electric :as e]
-   #?(:clj [electric-starter-app.server-jetty :as jetty])
+   #?(:clj [halo-electric.server-jetty :as jetty])
    #?(:clj [shadow.cljs.devtools.api :as shadow])
    #?(:clj [shadow.cljs.devtools.server :as shadow-server])
    #?(:clj [clojure.tools.logging :as log])))
@@ -27,7 +27,7 @@
 
        (def server (jetty/start-server!
                      (fn [ring-request]
-                       (e/boot-server {} electric-starter-app.main/Main ring-request))
+                       (e/boot-server {} halo-electric.main/Main ring-request))
                      config))
 
        (comment (.stop server))
@@ -35,7 +35,7 @@
 
 #?(:cljs ;; Client Entrypoint
    (do
-     (def electric-entrypoint (e/boot-client {} electric-starter-app.main/Main nil))
+     (def electric-entrypoint (e/boot-client {} halo-electric.main/Main nil))
 
      (defonce reactor nil)
 

@@ -1,4 +1,4 @@
-(ns electric-starter-app.main
+(ns halo-electric.main
   (:require [hyperfiddle.electric :as e]
             [hyperfiddle.electric-dom2 :as dom]))
 
