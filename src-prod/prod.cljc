@@ -20,9 +20,9 @@
     ;; The client's version is injected in the compiled .js file.
     (doto (compile-time-resource "electric-manifest.edn") prn)
     {:host "0.0.0.0", :port 8080,
-     :resources-path "public/electric_starter_app"
+     :resources-path "public/halo_electric"
      ;; shadow build manifest path, to get the fingerprinted main.sha1.js file to ensure cache invalidation
-     :manifest-path "public/electric_starter_app/js/manifest.edn"}))
+     :manifest-path "public/halo_electric/js/manifest.edn"}))
 
 ;;; Prod server entrypoint
 

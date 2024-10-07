@@ -14,9 +14,9 @@
      (def config
        {:host "0.0.0.0"
         :port 8080
-        :resources-path "public/electric_starter_app"
+        :resources-path "public/halo_electric"
         :manifest-path ; contains Electric compiled program's version so client and server stays in sync
-        "public//electric_starter_app/js/manifest.edn"})
+        "public//halo_electric/js/manifest.edn"})
 
      (defn -main [& args]
        (log/info "Starting Electric compiler and server...")
