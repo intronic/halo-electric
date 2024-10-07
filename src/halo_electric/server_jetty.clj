@@ -12,10 +12,14 @@
    [ring.middleware.cookies :as cookies]
    [ring.middleware.params :refer [wrap-params]]
    [ring.middleware.resource :refer [wrap-resource]]
-   [ring.util.response :as res])
+   [ring.util.response :as res]
+   [ring.middleware.oauth2 :as oauth2]
+   [com.halo9000.ring-oidc-session :as halo-oidc])
   (:import
    (org.eclipse.jetty.server.handler.gzip GzipHandler)
    (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer JettyWebSocketServletContainerInitializer$Configurator)))
+
+(def oidc-profiles (-> "HALO_OIDC" System/getenv slurp  clojure.edn/read-string))
 
 ;;; Electric integration
 
@@ -31,6 +35,8 @@
   ;; Applied bottom-up
   (-> (electric-ring/wrap-electric-websocket next-handler entrypoint) ; 5. connect electric client
     ; 4. this is where you would add authentication middleware (after cookie parsing, before Electric starts)
+    (halo-oidc/wrap-oidc-session oidc-profiles)
+    (oauth2/wrap-oauth2 oidc-profiles)
     (cookies/wrap-cookies) ; 3. makes cookies available to Electric app
     (electric-ring/wrap-reject-stale-client config) ; 2. reject stale electric client
     (wrap-params))) ; 1. parse query params
