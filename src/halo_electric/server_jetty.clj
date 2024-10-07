@@ -35,8 +35,8 @@
   ;; Applied bottom-up
   (-> (electric-ring/wrap-electric-websocket next-handler entrypoint) ; 5. connect electric client
     ; 4. this is where you would add authentication middleware (after cookie parsing, before Electric starts)
-    (halo-oidc/wrap-oidc-session oidc-profiles)
-    (oauth2/wrap-oauth2 oidc-profiles)
+    (halo-oidc/wrap-oidc-session oidc-profiles) ; add :com.halo9000.ring-oidc-session/userinfo map to request on :landing-uri routes if :token is authenticated (otherwise nil)
+    (oauth2/wrap-oauth2 oidc-profiles) ; add :ring.middleware.oauth2/access-tokens {id token-map} to :session
     (cookies/wrap-cookies) ; 3. makes cookies available to Electric app
     (electric-ring/wrap-reject-stale-client config) ; 2. reject stale electric client
     (wrap-params))) ; 1. parse query params
