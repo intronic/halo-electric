@@ -14,12 +14,11 @@
    [ring.middleware.resource :refer [wrap-resource]]
    [ring.util.response :as res]
    [ring.middleware.oauth2 :as oauth2]
+   [ring.middleware.defaults :refer [wrap-defaults] :as ringdef]
    [com.halo9000.ring-oidc-session :as halo-oidc])
   (:import
    (org.eclipse.jetty.server.handler.gzip GzipHandler)
    (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer JettyWebSocketServletContainerInitializer$Configurator)))
-
-(def oidc-profiles (-> "HALO_OIDC" System/getenv slurp  clojure.edn/read-string))
 
 ;;; Electric integration
 
@@ -35,10 +34,11 @@
   ;; Applied bottom-up
   (-> (electric-ring/wrap-electric-websocket next-handler entrypoint) ; 5. connect electric client
     ; 4. this is where you would add authentication middleware (after cookie parsing, before Electric starts)
-    (halo-oidc/wrap-oidc-session oidc-profiles) ; add :com.halo9000.ring-oidc-session/userinfo map to request on :landing-uri routes if :token is authenticated (otherwise nil)
-    (oauth2/wrap-oauth2 oidc-profiles) ; add :ring.middleware.oauth2/access-tokens {id token-map} to :session
+    (halo-oidc/wrap-oidc-session (:oidc-profile config)) ; add :com.halo9000.ring-oidc-session/userinfo map to request on :landing-uri routes if :token is authenticated (otherwise nil)
+    (oauth2/wrap-oauth2 (:oidc-profile config)) ; add :ring.middleware.oauth2/access-tokens {id token-map} to :session
     (cookies/wrap-cookies) ; 3. makes cookies available to Electric app
     (electric-ring/wrap-reject-stale-client config) ; 2. reject stale electric client
+    (wrap-defaults (-> ringdef/site-defaults (assoc-in [:session :cookie-attrs :same-site] :lax))) ; lax to allow cross-site GET cookie for auth state;  in prod, use secure-site-defaults and possibly :proxy true
     (wrap-params))) ; 1. parse query params
 
 (defn get-modules [manifest-path]
@@ -122,5 +122,5 @@ information."
                                              (configure-websocket! server)
                                              (add-gzip-handler! server))}
                        config))]
-    (log/info "👉" (str "http://" host ":" (-> server (.getConnectors) first (.getPort))))
+    (log/info "👉" (str "http://" host ":" (-> server (.getConnectors) first (.getPort)) " | OIDC " (config :oidc-profile-key)))
     server))

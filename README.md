@@ -1,6 +1,5 @@
 # Halo Electric Server App
 
-Based on [Electric](https://github.com/hyperfiddle/electric-startur-app).
 
 ## Instructions
 
@@ -51,3 +50,7 @@ Consequently, you need **robust cache invalidation** in prod!
   * In this example, complied js files are fingerprinted with their respective hash, to ensure a new release properly invalidates asset caches. [index.html](resources/public/halo_electric/index.html) is templated with the generated js file name.
   * The generated name comes from shadow-cljs's `manifest.edn` file (in `resources/public/halo_electric/js/manifest.edn`), produced by `clj -X:build:prod build-client`. Watch out: this shadow-cljs compilation manifest is not the same manifest as `electric-manifest.edn`!
   * Notice that [src/halo_electric/server_jetty.clj](src/halo_electric/server_jetty.clj) -> `wrap-index-page` reads `:manifest-path` from config. The config comes from [src-prod/prod.cljc](src-prod/prod.cljc).
+
+## Based on Electric Starter App
+
+Modified from [Electric Starter App](https://github.com/hyperfiddle/electric-starter-app) under [MIT license](https://github.com/hyperfiddle/electric-starter-app/blob/main/LICENSE).
