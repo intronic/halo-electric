@@ -20,8 +20,9 @@
 
 (e/defn Main [ring-request ctx]
   (e/server
-    (let [user (some-> ring-request :com.halo9000.ring-oidc-session/userinfo (u/client-userinfo ring-request))]
+    (let [user (some-> ring-request :com.halo9000.ring-oidc-session/userinfo #_u/client-userinfo)]
       (e/client
+        #_(println user)
         (binding [dom/node js/document.body]
           (if user
             (LoggedIn. user ctx)

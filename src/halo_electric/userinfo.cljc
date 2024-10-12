@@ -29,6 +29,13 @@
 (defn user-phone-verified? [user]
   (boolean (:phone_number_verified user)))
 
+(defn user-org [user]
+  (:urn:zitadel:iam:user:resourceowner:name user))
+
+(defn user-org-id [user]
+  (:urn:zitadel:iam:user:resourceowner:id user))
+
+
 (tests
   "initials"
   (user-initials {:name "Bob The Builder" :given_name "Bob" :family_name "The Builder"}) := "BT"
@@ -47,7 +54,7 @@
    (defn client-userinfo
      "Filter userinfo properties that are safe to send to client, and
            add server uri request information."
-     [userinfo request]
+     [userinfo]
      (-> userinfo
        (select-keys [:email
                      :email_verified
@@ -58,7 +65,6 @@
                      :phone_number
                      :preferred_username
                      :sub
-                     :updated_at])
-            ;; https://github.com/ring-clojure/ring/blob/master/SPEC.md
-       (merge {:request
-               (select-keys request [:uri :request-method :scheme :server-name :server-port :remote-addr])}))))
+                     :updated_at
+                     :urn:zitadel:iam:user:resourceowner:id
+                     :urn:zitadel:iam:user:resourceowner:name]))))
