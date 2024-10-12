@@ -15,7 +15,8 @@
    [ring.util.response :as res]
    [ring.middleware.oauth2 :as oauth2]
    [ring.middleware.defaults :refer [wrap-defaults] :as ringdef]
-   [com.halo9000.ring-oidc-session :as halo-oidc])
+   [com.halo9000.ring-oidc-session :as halo-oidc]
+   #_[com.halo9000.app])
   (:import
    (org.eclipse.jetty.server.handler.gzip GzipHandler)
    (org.eclipse.jetty.websocket.server.config JettyWebSocketServletContainerInitializer JettyWebSocketServletContainerInitializer$Configurator)))

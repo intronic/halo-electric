@@ -1,4 +1,5 @@
 {:deps    {com.hyperfiddle/electric       {:git/url "https://github.com/hyperfiddle/electric" :git/sha "b32ac98df7d7ec87f225d47354671be172ffa87e"}
+           com.hyperfiddle/rcf            {:mvn/version "20220926-202227"}
            ring/ring                      {:mvn/version "1.12.2"} ; comes with Jetty
            org.clojure/clojure            {:mvn/version "1.12.0"}
            org.clojure/clojurescript      {:mvn/version "1.11.132"}
@@ -7,8 +8,9 @@
            ring/ring-defaults             {:mvn/version "0.5.0"}
            ring-oauth2/ring-oauth2        {:mvn/version "0.3.0"}
            com.halo9000/ring-oidc-session {:mvn/version "1.0.27"}
+           org.clojure/java.classpath {:mvn/version "1.1.0"}
            #_#_com.halo9000/ring-oidc-session {:local/root "../ring-oidc-session"}
-           com.halo9000/app               {:local/root "../halo9000"}}
+           #_#_com.halo9000/app               {:local/root "../halo9000"}}
  :paths   ["src" "resources"]
  :aliases {:dev
            {:extra-paths ["src-dev"]

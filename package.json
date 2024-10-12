@@ -1,0 +1,19 @@
+{
+  "name": "halo-electric",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:tailwind:dev": "npx tailwindcss -i ./resources/input.css -o ./resources/public/halo_electric/styles.css --watch",
+    "build:tailwind": "npx tailwindcss -i ./resources/input.css -o ./resources/public/halo_electric/styles.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.9",
+    "@tailwindcss/typography": "^0.5.15",
+    "daisyui": "^4.12.13",
+    "tailwindcss": "^3.4.13"
+  }
+}
