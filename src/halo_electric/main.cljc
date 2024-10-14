@@ -13,13 +13,11 @@
 
 (e/defn LoggedOut [ctx]
   (e/client
-    (dom/h1 (dom/props {:class "text-3xl font-bold underline"})
-      (dom/text "Welcome to Halo9000 App"))
-    (dom/p (dom/a (dom/props {:href (app/login-path ctx)})
-             (dom/text "Login")))))
+    (hui/NavBarGuest. ctx "Welcome to Halo9000")))
 
 (e/defn Main [ring-request ctx]
   (e/server
+    (prn (get-in ring-request [:session :ring.middleware.oauth2/access-tokens]))
     (let [user (some-> ring-request :com.halo9000.ring-oidc-session/userinfo #_u/client-userinfo)]
       (e/client
         #_(println user)

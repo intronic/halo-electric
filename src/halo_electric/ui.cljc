@@ -25,11 +25,14 @@
               c-link "btn btn-outline btn-neutral-content text-neutral-content"]
           (hd/divp {:class "card-actions justify-end"}
             (dom/a (dom/props {:class c-link-default
-                               :href (app/logout-path ctx)})
-              (dom/text "Log Out"))
-            (dom/a (dom/props {:class c-link
                                :href (app/single-sign-out-path ctx)})
-              (dom/text "Single Sign Out"))))))))
+              (dom/text "Sign Out"))
+            #_#_(dom/a (dom/props {:class c-link-default
+                                   :href (app/logout-path ctx)})
+                  (dom/text "Log Out"))
+              (dom/a (dom/props {:class c-link
+                                 :href (app/single-sign-out-path ctx)})
+                (dom/text "Single Sign Out"))))))))
 
 (e/defn AvatarText [text size]
   "Avatar text size :xl or :2xl (w-10 or w-20)."
@@ -102,3 +105,19 @@
       (hd/divp {:class "flex-none gap-2"}
         (Search.)
         (Profile. user ctx)))))
+
+(e/defn NavBarGuest
+  [ctx title]
+  (e/client
+    (hd/divp {:class "navbar bg-base-100"}
+      (hd/divp {:class "flex-1"}
+        (dom/a (dom/props {:class "btn btn-ghost text-xl"
+                           :href "#"})
+          (dom/text title)))
+      (hd/divp {:class "flex-none gap-2"}
+        (let [c-link-default "btn btn-outline btn-primary"
+              c-link "btn btn-outline btn-neutral-content text-neutral-content"]
+          (hd/divp {}
+            (dom/a (dom/props {:class c-link-default
+                               :href (app/login-path ctx)})
+              (dom/text "Sign In"))))))))

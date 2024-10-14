@@ -4,6 +4,7 @@
    [halo-electric.main :as app]
    [hyperfiddle.electric :as e]
    [hyperfiddle.rcf]
+   [missionary.core :as m]
    #?(:clj [clojure.java.classpath :as cp])
    #?(:clj [clojure.java.io :as io])
    #?(:clj [halo-electric.server-jetty :as jetty])
@@ -11,8 +12,9 @@
    #?(:clj [shadow.cljs.devtools.server :as shadow-server])
    #?(:clj [clojure.tools.logging :as log])
    #?(:clj [clojure.edn :as edn])
-   #?(:clj [clojure.string :as str])))
-
+   #?(:clj [clojure.string :as str])
+   #?(:clj [clj-http.client :as client])
+   #?(:clj [com.halo9000.ring-oidc-session :as oidc])))
 
 
 ; (io/resource % loader)
@@ -74,7 +76,9 @@
                          (e/boot-server {} app/Main ring-request ctx))
                        config))
 
-         (comment (.stop server))))))
+         (comment
+           (.stop server)
+           (.getState server))))))
 
 #?(:cljs ;; Client Entrypoint
    (do
@@ -86,7 +90,7 @@
        (hyperfiddle.rcf/enable!)
        (set! reactor (electric-entrypoint
                        #(js/console.log "Reactor success:" %)
-                       #(js/console.error "Reactor failure:" %))))
+                       #(js/console.error "Reactor failure:" (.-message %)))))
 
      (defn ^:dev/before-load stop! []
        (hyperfiddle.rcf/enable! false)

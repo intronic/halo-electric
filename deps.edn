@@ -7,8 +7,10 @@
            ch.qos.logback/logback-classic {:mvn/version "1.5.8"}
            ring/ring-defaults             {:mvn/version "0.5.0"}
            ring-oauth2/ring-oauth2        {:mvn/version "0.3.0"}
-           com.halo9000/ring-oidc-session {:mvn/version "1.0.27"}
-           org.clojure/java.classpath {:mvn/version "1.1.0"}
+           clj-http/clj-http              {:mvn/version "3.13.0"}
+           slingshot/slingshot            {:mvn/version "0.12.2"}
+           org.clojure/java.classpath     {:mvn/version "1.1.0"}
+           com.halo9000/ring-oidc-session {:mvn/version "1.0.30"}
            #_#_com.halo9000/ring-oidc-session {:local/root "../ring-oidc-session"}
            #_#_com.halo9000/app               {:local/root "../halo9000"}}
  :paths   ["src" "resources"]
