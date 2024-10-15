@@ -1,21 +1,23 @@
-(ns halo-electric.appinfo)
+(ns halo-electric.appinfo
+  (:require [hyperfiddle.electric :as e]
+            [hyperfiddle.rcf :refer [tests tap %]]))
 
-(defn host-uri
-  [ctx]
-  (:host-uri ctx))
+(defn client-app-context [ctx]
+  (select-keys ctx [:id :launch-uri :landing-uri :logout-ring-uri :logout-oidc-uri]))
 
-(defn base-path
-  [ctx]
-  (:landing-uri ctx))
+(e/def app-context nil)
 
-(defn login-path
-  [ctx]
-  (:launch-uri ctx))
+(e/defn host-uri []
+  (:host-uri app-context))
 
-(defn logout-path
-  [ctx]
-  (:logout-ring-uri ctx))
+(e/defn base-path []
+  (:landing-uri app-context))
 
-(defn single-sign-out-path
-  [ctx]
-  (:logout-oidc-uri ctx))
+(e/defn login-path []
+  (:launch-uri app-context))
+
+(e/defn logout-path []
+  (:logout-ring-uri app-context))
+
+(e/defn single-sign-out-path []
+  (:logout-oidc-uri app-context))

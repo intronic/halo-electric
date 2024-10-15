@@ -1,70 +1,81 @@
 (ns halo-electric.userinfo
   (:require [clojure.string :as str]
-            [hyperfiddle.rcf :refer [tests tap %]]))
+            [hyperfiddle.electric :as e]
+            [hyperfiddle.rcf :refer [tests]]))
 
-(defn user-initials [user]
-  (as-> ((juxt :given_name :family_name) user) i
+(defn request-user
+  "Return userinfo from request if authenticated."
+  [request]
+  (:com.halo9000.ring-oidc-session/userinfo request))
+
+;; all ok for client on the websocket wire.. just keeping out of saved session state or tokens it GET requests..
+(defn client-user-context [userinfo]
+  userinfo)
+
+(e/def user-context nil) ; user context when authenticated
+
+;; These could come instead from the user-context as zero-param functions
+
+(defn initials [name given-name family-name]
+  (as-> [given-name family-name] i
     (map first i)
     (apply str i)
     (str/upper-case i)
     (if (= 2 (count i))
       i
-      (apply str (take 2 (:name user))))))
+      (apply str (take 2 name)))))
 
-(defn user-username [user]
-  (:preferred_username user))
+(e/defn user-username []
+  (:preferred_username user-context))
 
-(defn user-name [user]
-  (:name user))
+(e/defn user-name []
+  (:name user-context))
 
-(defn user-email [user]
-  (:email user))
+(e/defn user-given-name []
+  (:given_name user-context))
 
-(defn user-email-verified? [user]
-  (boolean (:email_verified user)))
+(e/defn user-family-name []
+  (:family_name user-context))
 
-(defn user-phone [user]
-  (:phone_number user))
+(e/defn user-initials []
+  (initials (user-name.) (user-given-name.) (user-family-name.)))
 
-(defn user-phone-verified? [user]
-  (boolean (:phone_number_verified user)))
+(e/defn user-email []
+  (:email user-context))
 
-(defn user-org [user]
-  (:urn:zitadel:iam:user:resourceowner:name user))
+(e/defn user-email-verified? []
+  (boolean (:email_verified user-context)))
 
-(defn user-org-id [user]
-  (:urn:zitadel:iam:user:resourceowner:id user))
+(e/defn user-phone []
+  (:phone_number user-context))
+
+(e/defn user-phone-verified? []
+  (boolean (:phone_number_verified user-context)))
+
+(e/defn user-org []
+  (:urn:zitadel:iam:user:resourceowner:name user-context))
+
+(e/defn user-org-id []
+  (:urn:zitadel:iam:user:resourceowner:id user-context))
+
+(e/defn user-role? [role]
+  (some? (get-in user-context [:urn:zitadel:iam:org:project:roles role])))
+
+(e/defn role-developer? []
+  (user-role?. :halo-developer))
 
 
 (tests
   "initials"
-  (user-initials {:name "Bob The Builder" :given_name "Bob" :family_name "The Builder"}) := "BT"
-  (user-initials {:name "The Builder" :given_name "" :family_name "The Builder"}) := "Th"
-  (user-initials {:name "Bob" :given_name "Bob" :family_name ""}) := "Bo"
-  (user-initials {:name ""}) := ""
-  (user-initials {:name "T"}) := "T"
-  (user-initials {:name "T" :given_name "T"}) := "T"
-  (user-initials {:name "T" :family_name "T"}) := "T"
-  (user-initials {}) := "")
+  (initials "Bob The Builder" "Bob" "The Builder") := "BT"
+  (initials "The Builder" "" "The Builder") := "Th"
+  (initials "Bob" "Bob" "") := "Bo"
+  (initials ""  nil nil) := ""
+  (initials "T" nil nil) := "T"
+  (initials "T" "T" nil) := "T"
+  (initials "T" nil "T") := "T"
+  (initials nil nil nil) := ""
+  :rcf)
 
 (comment
   :rcf)
-
-#?(:clj
-   (defn client-userinfo
-     "Filter userinfo properties that are safe to send to client, and
-           add server uri request information."
-     [userinfo]
-     (-> userinfo
-       (select-keys [:email
-                     :email_verified
-                     :family_name
-                     :given_name
-                     :locale
-                     :name
-                     :phone_number
-                     :preferred_username
-                     :sub
-                     :updated_at
-                     :urn:zitadel:iam:user:resourceowner:id
-                     :urn:zitadel:iam:user:resourceowner:name]))))

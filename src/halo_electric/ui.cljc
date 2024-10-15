@@ -3,29 +3,50 @@
             [hyperfiddle.electric-dom2 :as dom]
             [halo-electric.dom :as hd]
             [halo-electric.userinfo :as u]
-            [halo-electric.appinfo :as app]))
+            [halo-electric.appinfo :as app]
+            [halo-electric.authinfo :as auth]))
 
-(e/defn UserCard [user ctx]
+(e/defn DeveloperCard []
+  (e/server
+    (let [expires (auth/auth-expires.)
+          token? (some? (auth/auth-token.))
+          id-token? (some? (auth/auth-id-token.))
+          refresh-token (auth/auth-refresh-token.)]
+      (e/client
+        (hd/divp {:class "card-body"}
+          (dom/h2 (dom/props {:class "card-title"})
+            (dom/text "Auth Tokens"))
+          (dom/p (dom/props {})
+            (dom/text "Expires: " expires))
+          (dom/p (dom/props {})
+            (dom/text "Token?: " token?))
+          (dom/p (dom/props {})
+            (dom/text "ID Token?: " id-token?))
+          (dom/p (dom/props {})
+            (dom/text "Refresh Token: " (some? refresh-token))))))))
+
+(e/defn UserCard []
   (e/client
-    (println user)
     (hd/divp {:class "card bg-neutral text-neutral-content w-96 shadow-xl"}
       (hd/divp {:class "card-body"}
         (dom/h2 (dom/props {:class "card-title"})
-          (dom/text (u/user-org user)))
+          (dom/text (u/user-org.)))
         (dom/p (dom/props {})
-          (dom/text (u/user-username user)))
+          (dom/text (u/user-username.)))
         (dom/p (dom/props {})
-          (dom/text (u/user-name user)))
+          (dom/text (u/user-name.)))
         (dom/p (dom/props {})
-          (dom/text (u/user-email user)))
+          (dom/text (u/user-email.)))
         (dom/p (dom/props {})
-          (dom/text (u/user-phone user)))
+          (dom/text (u/user-phone.)))
+        (when (u/role-developer?.)
+          (DeveloperCard.))
 
         (let [c-link-default "btn btn-outline btn-primary"
               c-link "btn btn-outline btn-neutral-content text-neutral-content"]
           (hd/divp {:class "card-actions justify-end"}
             (dom/a (dom/props {:class c-link-default
-                               :href (app/single-sign-out-path ctx)})
+                               :href (app/single-sign-out-path.)})
               (dom/text "Sign Out"))
             #_#_(dom/a (dom/props {:class c-link-default
                                    :href (app/logout-path ctx)})
@@ -56,12 +77,12 @@
       (hd/divp {:class "w-10 rounded-full"}
         (AvatarText. text size)))))
 
-(e/defn UserProfile [user ctx]
+(e/defn UserProfile []
   (e/client
     (hd/divp {:class "dropdown dropdown-hover dropdown-bottom dropdown-end"}
-      (AvatarTextButton. (u/user-initials user) :xl "Profile menu")
+      (AvatarTextButton. (u/user-initials.) :xl "Profile menu")
       (hd/divp {:class "dropdown-content"}
-        (UserCard. user ctx)))))
+        (UserCard.)))))
 
 #_(e/defn UserMenu [user ctx]
   ;; simulate disabled link (browser ignores disabled property on A tags)
@@ -95,7 +116,7 @@
                              :placeholder "Search" :aria-label "Search"})))))
 
 (e/defn NavBar
-  [user ctx title Search Profile]
+  [title Search Profile]
   (e/client
     (hd/divp {:class "navbar bg-base-100"}
       (hd/divp {:class "flex-1"}
@@ -104,10 +125,10 @@
           (dom/text title)))
       (hd/divp {:class "flex-none gap-2"}
         (Search.)
-        (Profile. user ctx)))))
+        (Profile.)))))
 
 (e/defn NavBarGuest
-  [ctx title]
+  [title]
   (e/client
     (hd/divp {:class "navbar bg-base-100"}
       (hd/divp {:class "flex-1"}
@@ -119,5 +140,5 @@
               c-link "btn btn-outline btn-neutral-content text-neutral-content"]
           (hd/divp {}
             (dom/a (dom/props {:class c-link-default
-                               :href (app/login-path ctx)})
+                               :href (app/login-path.)})
               (dom/text "Sign In"))))))))

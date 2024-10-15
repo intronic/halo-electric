@@ -5,6 +5,8 @@
    [hyperfiddle.electric :as e]
    [hyperfiddle.rcf]
    [missionary.core :as m]
+   [halo-electric.authinfo :as auth]
+   [halo-electric.userinfo :as u]
    #?(:clj [clojure.java.classpath :as cp])
    #?(:clj [clojure.java.io :as io])
    #?(:clj [halo-electric.server-jetty :as jetty])
@@ -15,7 +17,6 @@
    #?(:clj [clojure.string :as str])
    #?(:clj [clj-http.client :as client])
    #?(:clj [com.halo9000.ring-oidc-session :as oidc])))
-
 
 ; (io/resource % loader)
 
@@ -40,13 +41,6 @@
 #?(:clj ;; Server Entrypoint
 
    (do
-     (defn client-ctx [profile]
-       (-> profile
-         (select-keys [:launch-uri
-                       :landing-uri
-                       :logout-ring-uri
-                       :logout-oidc-uri])
-         ))
 
      (let [oidc-profile-key (as-> "HALO_OIDC_PROFILE_KEY" k (System/getenv k) (when (not (str/blank? k)) (keyword k)))
            oidc-profile (as-> "HALO_OIDC_PROFILE" k (System/getenv k) (if k (slurp k) "{}") (edn/read-string k)
@@ -61,11 +55,15 @@
           :oidc-profile-key oidc-profile-key}))
 
      (defn -main [& args]
-       (let [ctx (client-ctx (get-in config [:oidc-profile (get config :oidc-profile-key)]))]
-         (when (= {} ctx) (throw (ex-info "Missing OIDC config or key"
-                                   (into {} (for [[k v] (select-keys config [:oidc-profile-key :oidc-profile])]
-                                              [k (if (map? v) (into {} (for [[k v'] v] [k (keys v')])) v)])))))
-         (log/info "Starting Electric compiler and server..." ctx)
+       (let [id (get config :oidc-profile-key)
+             ctx (some-> config
+                   (get-in [:oidc-profile id])
+                   (assoc :id id))]
+         (when (nil? ctx)
+           (throw (ex-info "Missing OIDC config or key"
+                    (into {} (for [[k v] (select-keys config [:oidc-profile-key :oidc-profile])]
+                               [k (if (map? v) (into {} (for [[k v'] v] [k (keys v')])) v)])))))
+         (log/info "Starting Electric compiler and server...")
 
          (shadow-server/start!)
          (shadow/watch :dev)
@@ -73,7 +71,8 @@
 
          (def server (jetty/start-server!
                        (fn [ring-request]
-                         (e/boot-server {} app/Main ring-request ctx))
+                         ;; make auth context available to the app on e/server for each request
+                         (e/boot-server {} app/AuthContext ring-request ctx))
                        config))
 
          (comment
@@ -82,7 +81,7 @@
 
 #?(:cljs ;; Client Entrypoint
    (do
-     (def electric-entrypoint (e/boot-client {} app/Main nil nil))
+     (def electric-entrypoint (e/boot-client {} app/AuthContext nil nil))
 
      (defonce reactor nil)
 

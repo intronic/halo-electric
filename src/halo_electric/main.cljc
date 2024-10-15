@@ -3,25 +3,45 @@
             [hyperfiddle.electric-dom2 :as dom]
             [halo-electric.ui :as hui]
             [halo-electric.userinfo :as u]
-            [halo-electric.appinfo :as app]))
+            [halo-electric.appinfo :as app]
+            [halo-electric.authinfo :as auth]))
 
 ;; Saving this file will automatically recompile and update in your browser
 
-(e/defn LoggedIn [user ctx]
+(e/defn LoggedIn []
   (e/client
-    (hui/NavBar. user ctx "Halo 9000" hui/AppSearchField hui/UserProfile)))
+    #_(prn "; client auth" auth/auth-context)
+    #_(prn "; client user" u/user-context)
+    (hui/NavBar. "Halo 9000" hui/AppSearchField hui/UserProfile)))
 
-(e/defn LoggedOut [ctx]
+(e/defn LoggedOut []
   (e/client
-    (hui/NavBarGuest. ctx "Welcome to Halo9000")))
+    (hui/NavBarGuest. "Welcome to Halo9000")))
 
-(e/defn Main [ring-request ctx]
+(e/defn Main []
   (e/server
-    (prn (get-in ring-request [:session :ring.middleware.oauth2/access-tokens]))
-    (let [user (some-> ring-request :com.halo9000.ring-oidc-session/userinfo #_u/client-userinfo)]
-      (e/client
-        #_(println user)
-        (binding [dom/node js/document.body]
-          (if user
-            (LoggedIn. user ctx)
-            (LoggedOut. ctx)))))))
+    #_(println "; main server-auth " auth/auth-context)
+    #_(println "; main server-user " u/user-context)
+    #_(println "; main server-ctx " app/app-context)
+    (e/client
+      #_(println "; main client-auth " auth/auth-context)
+      #_(println "; main client-user " u/user-context)
+      #_(println "; main client-ctx " app/app-context)
+      (binding [dom/node js/document.body]
+        (if u/user-context
+          (LoggedIn.)
+          (LoggedOut.))))))
+
+(e/defn AuthContext [ring-request ctx]
+  (e/server
+    #_(println :ctx (keys ctx) :app-ctx app/app-context)
+    (let [user (u/request-user ring-request)]
+      (binding [auth/auth-context (auth/request-auth ring-request)
+                u/user-context user
+                app/app-context ctx]
+        (let [user (u/client-user-context user)
+              ctx (app/client-app-context ctx)]
+          (e/client
+            (binding [u/user-context user
+                      app/app-context ctx]
+              (Main.))))))))
