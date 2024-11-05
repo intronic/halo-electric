@@ -114,7 +114,7 @@ information."
 
 (defn start-server! [entrypoint
                      {:keys [port host]
-                      :or   {port 8080, host "0.0.0.0"}
+                      :or   {port 8080, host "localhost"}
                       :as   config}]
   (let [server     (ring/run-jetty (middleware config entrypoint)
                      (merge {:port         port

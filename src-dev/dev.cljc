@@ -46,7 +46,7 @@
            oidc-profile (as-> "HALO_OIDC_PROFILE" k (System/getenv k) (if k (slurp k) "{}") (edn/read-string k)
                           (select-keys k [oidc-profile-key]))]
        (def config
-         {:host "0.0.0.0"
+         {:host "localhost"
           :port 8080
           :resources-path "public/halo_electric"
           :manifest-path ; contains Electric compiled program's version so client and server stays in sync

@@ -4,7 +4,8 @@
             [halo-electric.dom :as hd]
             [halo-electric.userinfo :as u]
             [halo-electric.appinfo :as app]
-            [halo-electric.authinfo :as auth]))
+            [halo-electric.authinfo :as auth]
+            [halo-electric.ui.select-theme :as thm]))
 
 (e/defn DeveloperCard []
   (e/server
@@ -39,6 +40,7 @@
           (dom/text (u/user-email.)))
         (dom/p (dom/props {})
           (dom/text (u/user-phone.)))
+        (thm/SelectTheme.)
         (when (u/role-developer?.)
           (DeveloperCard.))
 
