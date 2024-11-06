@@ -1,7 +1,10 @@
 (ns halo-electric.main
   (:require [hyperfiddle.electric :as e]
             [hyperfiddle.electric-dom2 :as dom]
-            [halo-electric.ui :as hui]
+            [halo-electric.ui.login :as login]
+            [halo-electric.ui.navbar :as nav]
+            [halo-electric.ui.user :as user]
+            [halo-electric.ui.search :as search]
             [halo-electric.userinfo :as u]
             [halo-electric.appinfo :as app]
             [halo-electric.authinfo :as auth]))
@@ -12,11 +15,13 @@
   (e/client
     #_(prn "; client auth" auth/auth-context)
     #_(prn "; client user" u/user-context)
-    (hui/NavBar. "Halo 9000" hui/AppSearchField hui/UserProfile)))
+    (nav/NavBar. "Halo 9000" search/AppSearchField user/UserProfile)))
 
 (e/defn LoggedOut []
   (e/client
-    (hui/NavBarGuest. "Welcome to Halo9000")))
+    (nav/NavBarGuest.
+      "Welcome to Halo9000"
+      (e/fn [] (login/LoginLink. (app/login-path.) "Sign In")))))
 
 (e/defn Main []
   (e/server
