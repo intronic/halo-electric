@@ -4,8 +4,8 @@
             [hyperfiddle.electric-svg :as svg]
             #_[heroicons.electric3.v24.outline :refer [bars-3-center-left]]))
 
-;bars-3-center-left
-(e/defn HamburgerLeftLSL
+;bars-3-center-left :stroke-linecap "round" :stroke-linejoin "round" :stroke-width "2"
+#_(e/defn HamburgerLeftLSL
   []
   (e/client
     #_(bars-3-center-left (dom/props {:class "h-5 w-5"}))

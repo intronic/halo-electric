@@ -3,7 +3,10 @@
             [hyperfiddle.electric-dom2 :as dom]
             [hyperfiddle.electric-svg :as svg]
             [halo-electric.ui.icon :as icon]
-            #_[heroicons.electric3.v24.outline :refer [bars-3-center-left]]))
+            [heroicons.electric.v24.outline :as out]
+            [heroicons.electric.v24.solid :as sol]
+            #_[heroicons.electric3.v24.outline :refer [bars-3-center-left]] ; v3
+            ))
 
 
 (e/defn NavBarGuest
@@ -33,7 +36,9 @@
         (Search.)
         (Profile.)))))
 
-#_(e/defn DaisyExampleNav
+;; {:stroke-linecap "round" :stroke-linejoin "round" :stroke-width "2"}
+;; "path {stroke-linecap: round; stroke-linejoin: round; stroke-width: 2}"
+(e/defn DaisyExampleNav
   []
   (e/client
     (dom/div
@@ -45,8 +50,8 @@
           (dom/div
             (dom/props {:class "btn btn-ghost lg:hidden"
                         :tabindex "0" :role "button"})
-            #_(bars-3-center-left (dom/props {:class "h-5 w-5"}))
-            (icon/HamburgerLeftLSL.))
+            (sol/bars-3-center-left (dom/props {:class "h-5 w-5"
+                                                :style "path {stroke-width: \"2\"}"})))
           (dom/ul
             (dom/props {:class "menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
                         :tabindex "0"})

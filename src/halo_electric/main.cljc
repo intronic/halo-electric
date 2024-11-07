@@ -15,7 +15,8 @@
   (e/client
     #_(prn "; client auth" auth/auth-context)
     #_(prn "; client user" u/user-context)
-    (nav/NavBar. "Halo 9000" search/AppSearchField user/UserProfile)))
+    (nav/NavBar. "Halo 9000" search/AppSearchField user/UserProfile)
+    #_(nav/DaisyExampleNav.)))
 
 (e/defn LoggedOut []
   (e/client
